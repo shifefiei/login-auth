@@ -5,6 +5,8 @@ com/example/jwt/interceptor/UserContext.class
 com/example/jwt/controller/UserController.class
 com/example/jwt/util/JwtUtil.class
 com/example/jwt/dto/AuthDtos.class
+com/example/jwt/config/SecurityHeadersFilter.class
+com/example/jwt/common/GlobalExceptionHandler.class
 com/example/jwt/entity/User.class
 com/example/jwt/interceptor/JwtAuthInterceptor.class
 com/example/jwt/dto/AuthDtos$RegisterRequest.class

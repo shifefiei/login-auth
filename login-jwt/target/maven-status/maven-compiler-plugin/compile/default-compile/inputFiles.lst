@@ -1,6 +1,8 @@
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/LoginJwtApplication.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/common/GlobalExceptionHandler.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/common/Result.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/config/JwtProperties.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/config/SecurityHeadersFilter.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/config/WebConfig.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/controller/AuthController.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-jwt/src/main/java/com/example/jwt/controller/UserController.java

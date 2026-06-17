@@ -65,7 +65,7 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public Result<TokenResponse> refresh(@Valid @RequestBody RefreshRequest req) {
-        Long userId = refreshTokenService.resolveUserId(req.refreshToken());
+        Long userId = refreshTokenService.consume(req.refreshToken());
         if (userId == null) {
             return Result.error(1003, "Refresh Token 无效或已过期，请重新登录");
         }
@@ -73,8 +73,7 @@ public class AuthController {
         if (user.isEmpty()) {
             return Result.error(1003, "用户不存在");
         }
-        // Refresh Token Rotation：旧的作废，发新的
-        refreshTokenService.revoke(req.refreshToken());
+        // Refresh Token Rotation：旧 token 已被原子消费，这里只发新的
         return Result.ok(issueTokens(user.get()));
     }
 

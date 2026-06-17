@@ -43,4 +43,8 @@ public class UserService {
         }
         return Optional.empty();
     }
+
+    public Optional<User> findById(Long id) {
+        return Optional.ofNullable(userRepository.selectById(id));
+    }
 }

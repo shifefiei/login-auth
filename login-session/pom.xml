@@ -45,10 +45,10 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 仅用 BCrypt 做密码哈希 -->
+        <!-- Spring Security：用于 CSRF 防护（同时内含 BCrypt 密码哈希） -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>

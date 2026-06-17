@@ -1,5 +1,7 @@
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/LoginSessionApplication.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/common/GlobalExceptionHandler.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/common/Result.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/config/SecurityConfig.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/config/SessionConfig.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/config/WebConfig.java
 /Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/controller/AuthController.java

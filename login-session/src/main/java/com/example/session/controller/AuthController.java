@@ -67,6 +67,7 @@ public class AuthController {
         LoginUser loginUser = new LoginUser(
                 user.getId(), user.getUsername(), user.getPhone(), user.getEmail());
         HttpSession session = request.getSession(true);
+        request.changeSessionId();
         session.setAttribute(AuthInterceptor.SESSION_USER_KEY, loginUser);
         return loginUser;
     }

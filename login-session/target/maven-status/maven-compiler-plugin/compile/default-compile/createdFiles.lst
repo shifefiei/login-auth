@@ -1,11 +1,14 @@
 com/example/session/service/UserService.class
 com/example/session/controller/UserController.class
+com/example/session/config/SecurityConfig.class
 com/example/session/controller/AuthController.class
 com/example/session/config/WebConfig.class
 com/example/session/interceptor/AuthInterceptor.class
+com/example/session/common/GlobalExceptionHandler.class
 com/example/session/dto/AuthDtos.class
 com/example/session/dto/AuthDtos$RegisterRequest.class
 com/example/session/entity/User.class
+com/example/session/config/SecurityConfig$CsrfCookieFilter.class
 com/example/session/LoginSessionApplication.class
 com/example/session/config/SessionConfig.class
 com/example/session/common/Result.class

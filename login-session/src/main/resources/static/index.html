@@ -120,8 +120,15 @@
 </div>
 
 <script>
-    // withCredentials: true 让浏览器带上 Session Cookie
-    const api = axios.create({ baseURL: '', withCredentials: true });
+    // withCredentials: true 让浏览器带上 Session Cookie；
+    // CSRF：axios 自动读取 XSRF-TOKEN cookie 并放入 X-XSRF-TOKEN 请求头（与后端 Spring Security 约定一致）
+    const api = axios.create({
+        baseURL: '',
+        withCredentials: true,
+        xsrfCookieName: 'XSRF-TOKEN',
+        xsrfHeaderName: 'X-XSRF-TOKEN',
+        withXSRFToken: true
+    });
 
     const app = new Vue({
         el: '#app',

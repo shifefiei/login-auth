@@ -20,13 +20,17 @@ spring:
       password: ${redis_password}
       database: 0
 
-# ===== 应用自定义 JWT 配置 =====
+# ===== 应用自定义配置（当前为本地开发值，注释标注线上应改成的值）=====
 app:
   jwt:
     # HS256 密钥，至少 32 字节；生产请放环境变量，勿提交真实值
     secret: please-change-this-to-a-very-long-random-secret-key-32bytes+
     access-token-ttl: 300000        # Access Token 5 分钟（毫秒）
     refresh-token-ttl: 604800000    # Refresh Token 7 天（毫秒）
+  cors:
+    # 同源部署留空（不触发 CORS）；线上前后端分离时填前端 Origin，逗号分隔，如 https://web.example.com
+    allowed-origins: ""
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
 
 # ===== MyBatis Plus 配置 =====
 mybatis-plus:

@@ -113,3 +113,90 @@ redis-cli -h <host> -p 6379 -a <password> -n 0 KEYS 'spring:session:login-sessio
 # 查看某个 Session 内容（JSON 可读）
 redis-cli -h <host> -p 6379 -a <password> -n 0 HGETALL 'spring:session:login-session:sessions:<sessionId>'
 ```
+
+---
+
+## 安全：CSRF 防护
+
+### 什么是 CSRF
+
+CSRF（跨站请求伪造）：攻击者诱导**已登录用户的浏览器**，向目标站点发出用户本意之外的请求，借用浏览器**自动携带的登录凭证**完成操作（如转账、改密码）。它利用的不是“偷到凭证”，而是“浏览器会自动带上凭证”这一行为，所以是否易受 CSRF 取决于**凭证是不是浏览器自动携带的**。
+
+### login-jwt 方案：凭证不入 Cookie + 重点防 XSS
+
+- **Token 不写 Cookie**：Access/Refresh Token 存于前端，经 `Authorization: Bearer` 头**手动**携带。浏览器不会自动带上 Authorization 头，攻击者的跨站页面也拼不出该头，因此 JWT 模式**天然规避 CSRF**。
+- **代价转移到 XSS**：Token 存在前端（localStorage）会暴露在 XSS 下，故本模块安全重点是防 XSS。`SecurityHeadersFilter` 统一下发安全响应头：
+  - `Content-Security-Policy`（限制脚本来源，防 XSS 核心）
+  - `X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy: no-referrer`
+  - 配合 Vue 模板默认输出转义，进一步降低注入风险。
+- 结论：**只要 Token 不落 Cookie，就不需要额外的 CSRF Token 机制**；务必守住 XSS 这条线。
+
+### login-session 方案：引入 Spring Security CSRF + 保持 SameSite
+
+Session 用 `SESSION_ID` Cookie 存登录态，而 Cookie 是浏览器自动携带的，正中 CSRF 利用条件，必须专门防护。本模块采用**双重防护**：
+
+- **第一道防线 · SameSite Cookie**：`SessionConfig` 给 `SESSION_ID` 设 `SameSite`（默认 `Lax`），跨站请求默认不带 Cookie，挡住大部分 CSRF。
+- **核心方案 · Spring Security 双提交 Cookie**：引入 `spring-boot-starter-security`，`SecurityConfig` 仅用于 CSRF（认证仍由 `AuthInterceptor` + Session 负责，故 `permitAll`）。具体怎么发 token、怎么校验，见下面的详细流程。
+
+> `XSRF-TOKEN` 的 `SameSite`/`Secure` 跟随 `app.cookie` 配置，与会话 Cookie 保持一致。
+> 一旦因前后端分离把 `SameSite` 改为 `None`（跨站），第一道防线失效，此时全靠 CSRF Token 兜底，且需配合正确的 CORS（显式 Origin + 允许携带凭证）。
+
+#### 双提交 Cookie 详细流程
+
+涉及到的名字：
+
+| 名字 | 是什么 | 谁设置 / 谁读 |
+|---|---|---|
+| `XSRF-TOKEN` | **Cookie 名**，存 CSRF token（非 HttpOnly） | 服务端写，前端 JS 读 |
+| `X-XSRF-TOKEN` | **请求头名**，回传 CSRF token | 前端 axios 写，服务端读 |
+| `SESSION_ID` | 会话 Cookie（登录态，HttpOnly） | Spring Session 管 |
+| `CookieCsrfTokenRepository` | 把 token 写入/读出 `XSRF-TOKEN` cookie | 服务端 |
+| `CsrfFilter` | 比对 token 的过滤器 | 服务端 |
+
+> 注意：cookie 名 `XSRF-TOKEN` 与请求头名 `X-XSRF-TOKEN` 长得像但不是一个东西，一个在 Cookie、一个在 Header。
+
+**第 1 步：浏览器首次访问，服务端下发 token**
+
+```
+GET / HTTP/1.1
+Host: localhost:8082
+```
+
+服务端 `CsrfFilter` 生成随机 token（如 `abc123def456`），`CsrfCookieFilter` 触发写出，`CookieCsrfTokenRepository` 写进响应 cookie：
+
+```
+HTTP/1.1 200 OK
+Set-Cookie: XSRF-TOKEN=abc123def456; Path=/; SameSite=Lax          # 无 HttpOnly，JS 可读
+Set-Cookie: SESSION_ID=xxxx; Path=/; HttpOnly; SameSite=Lax        # HttpOnly，JS 读不到
+```
+
+**第 2 步：前端发写请求，从 cookie 取 token 放进请求头**
+
+axios 按配置 `xsrfCookieName: 'XSRF-TOKEN'` / `xsrfHeaderName: 'X-XSRF-TOKEN'` / `withXSRFToken: true` 自动完成：从 `XSRF-TOKEN` cookie 读出值，放进 `X-XSRF-TOKEN` 请求头。实际请求里 token 出现两份：
+
+```
+POST /api/auth/login HTTP/1.1
+Host: localhost:8082
+X-XSRF-TOKEN: abc123def456                              # A：JS 从 cookie 读出后手动放的（请求头）
+Cookie: XSRF-TOKEN=abc123def456; SESSION_ID=xxxx        # B：浏览器自动带的（cookie）
+Content-Type: application/json
+
+{"username":"bob","password":"123456"}
+```
+
+**第 3 步：服务端比对两份 token**
+
+`CsrfFilter` 执行：
+
+1. 从 **Cookie `XSRF-TOKEN`** 读期望值 B（`CookieCsrfTokenRepository.loadToken`）；
+2. 从 **请求头 `X-XSRF-TOKEN`** 取实际值 A（`CsrfTokenRequestAttributeHandler` 解析）；
+3. 比较 `A.equals(B)`：相等放行进入 Controller，不等或缺失返回 **403**。
+
+```
+A (X-XSRF-TOKEN 请求头) == B (XSRF-TOKEN cookie)  →  放行
+A != B 或 A 缺失                                   →  403
+```
+
+**攻击者为什么过不了**：跨站页面发请求时，浏览器仍会自动带上 `XSRF-TOKEN` cookie（B 有），但攻击者的 JS 受同源策略限制**读不到该 cookie 的值**，拼不出 `X-XSRF-TOKEN` 请求头（A 缺失）→ `A != B` → 403。
+
+> 一句话：同一个 token 走两条路到服务端——浏览器自动带的 **Cookie** 和 JS 主动读 cookie 后填的 **请求头**。攻击者能借用前者，但读不到 cookie 值、填不出后者，于是露馅。
