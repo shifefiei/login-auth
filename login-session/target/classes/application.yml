@@ -1,0 +1,48 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: login-session
+
+  # ===== 数据库（MySQL）配置：请自行补全 url / username / password =====
+  datasource:
+    url: jdbc:mysql://${db_host}:3306/login_auth?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${db_user}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # ===== Redis 配置：请自行补全 host / port / password =====
+  data:
+    redis:
+      host: ${redis_host}
+      port: 6379
+      password: ${redis_password}
+      database: 1
+
+  # ===== Spring Session 使用 Redis 存储 =====
+  session:
+    store-type: redis
+    timeout: 30m
+    redis:
+      namespace: spring:session:login-session
+
+# ===== MyBatis Plus 配置 =====
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 控制台打印 SQL，生产可移除
+  global-config:
+    db-config:
+      id-type: auto
+
+# ===== Cookie 配置（按环境调整）=====
+app:
+  cookie:
+    secure: false
+    same-site: Lax
+    domain-pattern: ""
+
+logging:
+  level:
+    com.example.session: debug

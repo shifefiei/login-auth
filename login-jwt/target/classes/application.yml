@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: login-jwt
+
+  # ===== 数据库（MySQL）配置：请自行补全 url / username / password =====
+  datasource:
+    url: jdbc:mysql://${db_host}:3306/login_auth?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${db_user}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # ===== Redis 配置：请自行补全 host / port / password =====
+  data:
+    redis:
+      host: ${redis_host}
+      port: 6379
+      password: ${redis_password}
+      database: 0
+
+# ===== 应用自定义 JWT 配置 =====
+app:
+  jwt:
+    # HS256 密钥，至少 32 字节；生产请放环境变量，勿提交真实值
+    secret: please-change-this-to-a-very-long-random-secret-key-32bytes+
+    access-token-ttl: 300000        # Access Token 5 分钟（毫秒）
+    refresh-token-ttl: 604800000    # Refresh Token 7 天（毫秒）
+
+# ===== MyBatis Plus 配置 =====
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   # 控制台打印 SQL，生产可移除
+  global-config:
+    db-config:
+      id-type: auto
+
+logging:
+  level:
+    com.example.jwt: debug

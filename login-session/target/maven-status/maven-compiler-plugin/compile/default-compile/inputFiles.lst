@@ -1,0 +1,12 @@
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/LoginSessionApplication.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/common/Result.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/config/SessionConfig.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/config/WebConfig.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/controller/AuthController.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/controller/UserController.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/dto/AuthDtos.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/dto/LoginUser.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/entity/User.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/interceptor/AuthInterceptor.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/repository/UserRepository.java
+/Users/shifeifei/sff/Getting-Started-Tutorial/login-auth/login-session/src/main/java/com/example/session/service/UserService.java
